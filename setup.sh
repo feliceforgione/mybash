@@ -1,9 +1,19 @@
 #!/bin/bash
 
+
+#######################################################
+## General Variables
+#######################################################
 RC='\e[0m'  #Reset Colors
 RED='\e[31m'
 YELLOW='\e[33m'
 GREEN='\e[32m'
+
+## Get the correct user home directory.
+USER_HOME=$USERPROFILE
+
+
+
 
 command_exists() {
     command -v $1 >/dev/null 2>&1
@@ -12,7 +22,7 @@ command_exists() {
 
 checkEnv() {
     ## Check for requirements.
-    REQUIREMENTS='curl winget'
+    REQUIREMENTS='curl winget zsh'
     for req in ${REQUIREMENTS}; do
         if ! command_exists ${req}; then
             echo -e "${RED}To run me, you need: ${req}${RC}"
@@ -96,16 +106,40 @@ installFastfetch() {
     fi
 }
 
+install_zsh_syntax_highlighting() {
+    local file_path="$USER_HOME/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+    if [ -f "$file_path" ]; then
+        echo "ZSH Syntax Highlighting installed"
+    else
+        echo -e "${YELLOW}Installing ZSH Syntax Highlighting....${RC}"
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$USER_HOME/.zsh/zsh-syntax-highlighting"
+    fi
+}
+
+
+
+installPlugins() {
+    echo -e "${GREEN}\nInstalling Programs....${RC}"
+    installFastfetch
+    installStarship
+    installFzf
+    installZoxide
+
+    install_zsh_syntax_highlighting
+
+}
+
 #######################################################
 # Link Config files
 #######################################################
-linkConfig() {
+linkBashConfig() {
     ## Get the correct user home directory.
-    USER_HOME=$USERPROFILE
+   # USER_HOME=$USERPROFILE
+   echo -e "\n${GREEN}Creating bashrc file....${RC}"
 
     ## Check if a bashrc file is already there.
     OLD_BASHRC="${USER_HOME}/.bashrc"
-
 
      if [[ -e ${OLD_BASHRC} ]]; then
         echo -e "${YELLOW}Moving old bash config file to $(printf "%q" "$USER_HOME")\.bashrc.bak${RC}"
@@ -119,6 +153,39 @@ linkConfig() {
 
     ## Make symbolic link.
     ln -svf ${GITPATH}/.bashrc ${USER_HOME}/.bashrc
+   # ln -svf ${GITPATH}/starship.toml ${USER_HOME}/.config/starship.toml
+}
+
+linkZshConfig() {
+    ## Get the correct user home directory.
+    #USER_HOME=$USERPROFILE
+    echo -e "\n${GREEN}Creating zshrc file....${RC}"
+
+    ## Check if a zshrc file is already there.
+    OLD_ZSHRC="${USER_HOME}/.zshrc"
+
+
+     if [[ -e ${OLD_ZSHRC} ]]; then
+        echo -e "${YELLOW}Moving old zsh config file to $(printf "%q" "$USER_HOME")\.zshrc.bak${RC}"
+         if ! mv ${OLD_ZSHRC} ${USER_HOME}/.zshrc.bak; then
+             echo -e "${RED}Can't move the old zsh config file!${RC}"
+            exit 1
+        fi
+     fi
+
+    echo -e "${YELLOW}Linking new zsh config file...${RC}"
+
+    ## Make symbolic link.
+    ln -svf ${GITPATH}/.zshrc ${USER_HOME}/.zshrc
+}
+
+linkConfig() {
+     
+
+    linkBashConfig
+    linkZshConfig
+
+    echo -e "\n${YELLOW}Linking starship toml file...${RC}"
     ln -svf ${GITPATH}/starship.toml ${USER_HOME}/.config/starship.toml
 }
 
@@ -127,8 +194,5 @@ linkConfig() {
 # Program Run 
 #######################################################
 checkEnv
-installStarship
-installFzf
-installZoxide
-installFastfetch
+installPlugins
 linkConfig
