@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RC='\e[0m'  #Reset C
+RC='\e[0m'  #Reset Colors
 RED='\e[31m'
 YELLOW='\e[33m'
 GREEN='\e[32m'
@@ -12,11 +12,13 @@ command_exists() {
 
 checkEnv() {
     ## Check for requirements.
-    REQUIREMENTS='curl groups sudo'
-    if ! command_exists ${REQUIREMENTS}; then
-        echo -e "${RED}To run me, you need: ${REQUIREMENTS}${RC}"
-        exit 1
-    fi
+    REQUIREMENTS='curl winget'
+    for req in ${REQUIREMENTS}; do
+        if ! command_exists ${req}; then
+            echo -e "${RED}To run me, you need: ${req}${RC}"
+            exit 1
+        fi
+    done
 
     ## Check Package Handeler
     PACKAGEMANAGER='apt yum dnf pacman zypper'
@@ -41,54 +43,72 @@ checkEnv() {
      echo -e "${GREEN}Current path ${GITPATH}${RC}"
 }
 
+
+#######################################################
+# Plugin Installation 
+#######################################################
 installStarship() {
-    if command_exists starship; then
-        echo "Starship already installed"
-        return
-    fi
-
-}
-
-installStarship2() {
-    if command_exists starship; then
-        echo "Starship already installed"
-        return
-    fi
-
-    if ! curl -sS https://starship.rs/install.sh | sh; then
+     if command_exists starship; then
+         echo "Starship already installed"
+         return
+     fi
+     if ! winget install --id Starship.Starship; then
         echo -e "${RED}Something went wrong during starship install!${RC}"
         exit 1
     fi
-    if command_exists fzf; then
-        echo "Fzf already installed"
-    else
-        git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-        ~/.fzf/install
-    fi
+    
 }
 
-installZoxide2() {
+installFzf() {
+     if command_exists fzf; then
+         echo "Fzf already installed"
+         return
+     fi
+     if ! winget install fzf; then
+        echo -e "${RED}Something went wrong during fzf install!${RC}"
+        exit 1
+    fi
+    
+}
+
+
+installZoxide() {
     if command_exists zoxide; then
         echo "Zoxide already installed"
         return
     fi
 
-    if ! curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh; then
+    if ! winget install ajeetdsouza.zoxide; then
         echo -e "${RED}Something went wrong during zoxide install!${RC}"
         exit 1
     fi
 }
 
+installFastfetch() {
+    if command_exists fastfetch; then
+        echo "Fastfetch already installed"
+        return
+    fi
 
+    if ! winget install fastfetch; then
+        echo -e "${RED}Something went wrong during fastfetch install!${RC}"
+        exit 1
+    fi
+}
+
+#######################################################
+# Link Config files
+#######################################################
 linkConfig() {
     ## Get the correct user home directory.
     USER_HOME=$USERPROFILE
+
     ## Check if a bashrc file is already there.
     OLD_BASHRC="${USER_HOME}/.bashrc"
-    echo $USER_HOME
-    echo $OLD_BASHRC
+
+
      if [[ -e ${OLD_BASHRC} ]]; then
-        echo -e "${YELLOW}Moving old bash config file to ${USER_HOME}/.bashrc.bak${RC}"
+        echo -e "${YELLOW}Moving old bash config file to $(printf "%q" "$USER_HOME")\.bashrc.bak${RC}"
          if ! mv ${OLD_BASHRC} ${USER_HOME}/.bashrc.bak; then
              echo -e "${RED}Can't move the old bash config file!${RC}"
             exit 1
@@ -96,11 +116,19 @@ linkConfig() {
      fi
 
     echo -e "${YELLOW}Linking new bash config file...${RC}"
+
     ## Make symbolic link.
     ln -svf ${GITPATH}/.bashrc ${USER_HOME}/.bashrc
-    #ln -svf ${GITPATH}/starship.toml ${USER_HOME}/.config/starship.toml
+    ln -svf ${GITPATH}/starship.toml ${USER_HOME}/.config/starship.toml
 }
 
+
+#######################################################
+# Program Run 
+#######################################################
 checkEnv
 installStarship
+installFzf
+installZoxide
+installFastfetch
 linkConfig
