@@ -117,6 +117,16 @@ install_zsh_syntax_highlighting() {
     fi
 }
 
+install_zsh_auto_suggestions() {
+    local file_path="$USER_HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+    if [ -f "$file_path" ]; then
+        echo "ZSH Auto Suggestions installed"
+    else
+        echo -e "${YELLOW}Installing ZSH Auto Suggestions....${RC}"
+        git clone https://github.com/zsh-users/zsh-autosuggestions "$USER_HOME/.zsh/zsh-autosuggestions"
+    fi
+}
 
 
 installPlugins() {
@@ -127,6 +137,7 @@ installPlugins() {
     installZoxide
 
     install_zsh_syntax_highlighting
+    install_zsh_auto_suggestions
 
 }
 
