@@ -236,7 +236,7 @@ linkConfig() {
 
     linkBashConfig
     linkZshConfig
-    linkFishConfig
+    #linkFishConfig
 
     echo -e "\n${YELLOW}Linking starship toml file...${RC}"
     ln -svf ${GITPATH}/starship.toml ${USER_HOME}/.config/starship.toml
