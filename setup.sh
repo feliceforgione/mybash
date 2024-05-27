@@ -59,14 +59,35 @@ checkEnv() {
 #######################################################
 installStarship() {
      if command_exists starship; then
-         echo "Starship already installed"
-         return
-     fi
-     if ! winget install --id Starship.Starship; then
-        echo -e "${RED}Something went wrong during starship install!${RC}"
-        exit 1
+         echo "Starship already installed"         
+     else
+        if ! winget install --id Starship.Starship; then
+            echo -e "${RED}Something went wrong during starship install!${RC}"
+            exit 1
+        fi
     fi
-    
+    copy_starship_exe
+}
+
+copy_starship_exe() {
+    # This is needed for starship to work within zsh otherwise it wont find the starship.exe
+    local src="C:\\Program Files\\starship\\bin\\starship.exe"
+    local dest="$USER_HOME\\bin"
+    local file_path="$USER_HOME\bin\starship.exe"
+
+    if [ ! -f "$file_path" ]; then
+        # Ensure the destination directory exists
+        mkdir -p "$USER_HOME\\bin"
+
+        # Copy the file
+        cp "$src" "$dest"
+
+        if [ $? -eq 0 ]; then
+            echo "Starship.exe copied successfully to $dest"
+        else
+            echo "Failed to copy Starship.exe to $dest"
+        fi
+    fi   
 }
 
 installFzf() {
