@@ -17,6 +17,8 @@ source ./modules/_my_help_manual_function.sh
 clear
 fastfetch
 echo "Welcome to ZSH"
+echo "For help on new commands, type 'zhelp'"
+
 autoload -U compinit; compinit
 source ~/.zsh/fzf-tab/fzf-tab.zsh
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

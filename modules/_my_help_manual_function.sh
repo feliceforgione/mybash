@@ -2,52 +2,40 @@
 # My Help Function
 #######################################################
 
-# function help {
-#   local ecode=${2:-0}
-
-#   [[ -n $1 ]] && printf "\n $1\n" >&2
-
-# cat >&2 << helpMessage
-
-#   Usage: ${0##*/} <ofile> <file.c> [ <cflags> ... --log [ \$(<./bldflags)]]
-
-#     ${0##*/} calls 'gcc -Wall -o <ofile> <file.c> <cflags> <\$(<./bldflags)>'
-#     If the file './bldflags' exists in the present directory, its contents are
-#     read into the script as additional flags to pass to gcc. It is intended to
-#     provide a simple way of specifying additional libraries common to the source
-#     files to be built. (e.g. -lssl -lcrypto).
-
-#     If the -log option is given, then the compile string and compiler ouput are
-#     written to a long file in ./log/<ofile>_gcc.log
-
-#   Options:
-
-#     -h  |  --help  program help (this file)
-#     -l  |  --log   write compile string and compiler ouput to ./log/<ofile>_gcc.log
-
-# helpMessage
-
-#   exit $ecode
-# }
-
-RC='\e[0m'  #Reset Color
+RC='\e[0m' #Reset Color
 RED='\e[31m'
 YELLOW='\e[33m'
 GREEN='\e[32m'
 
-
-
- help() {
+zhelp() {
+  local COMMANDS="z fzf history trash"
   local param="$1"
   echo " "
   if [[ "$param" == "fzf" ]]; then
-    printf "${GREEN}FZF${RC} : command-line fuzzy finder\n"
+    printf "${GREEN}FZF : command-line fuzzy finder${RC}\n"
     echo "---------------------------------------------------------------"
-    printf "${YELLOW} Ctrl + R${RC} : search your command history\n" 
+    printf "${YELLOW} Ctrl + R${RC} : search your command history\n"
     printf "${YELLOW} Ctrl + T${RC} : search o your files (with your current working directory dictating where to perform the search recursively)\n"
+  elif [[ "$param" == "z" ]]; then
+    printf "${GREEN}Zoxide (z) : smarter cd command, inspired by z and autojump.${RC}\n"
+    echo "---------------------------------------------------------------"
+    printf "${YELLOW}zoxide${RC} : man pages\n"
+    printf "${YELLOW}z  <path>${RC} : jump to path that has been searched before\n"
+    printf "${YELLOW}zi <path>${RC} : search previously used paths\n"
+  elif [[ "$param" == "history" ]]; then
+    printf "${GREEN}history : list of previous commands.${RC}\n"
+    echo "---------------------------------------------------------------"
+    printf "${YELLOW}history${RC} : show  previous commands. Enter ${YELLOW}!<number>${RC} to go to that command\n"
+    printf "${YELLOW}history | <searchtext>${RC} : show previous commands containing the search text. Enter ${YELLOW}!<number>${RC} to go to that command\n"
+  elif [[ "$param" == "trash" ]]; then
+    printf "${GREEN}trash : safely remove files and directories.${RC}\n"
+    echo "---------------------------------------------------------------"
+    printf "${YELLOW}trash <file | dir>${RC} : removes file or directory\n"
+    printf "${YELLOW}trash-list>${RC} : show list of files in trash\n"
+    printf "${YELLOW}trash-restore <dir>${RC} : show list of files in ${YELLOW}<dir>${RC} that can be restored\n"
   else
-        echo -e "Following commands: ${GREEN}fzf${RC}"
-        echo -e "Enter a command after help : ${YELLOW}help fzf${RC}"
+    echo -e "Following commands: ${GREEN}$COMMANDS${RC}"
+    echo -e "Enter a command after help : ${YELLOW}zhelp <command>${RC}"
   fi
 }
 

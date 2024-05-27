@@ -18,6 +18,7 @@ clear
 fastfetch
 
 echo "Welcome to BASH"
+echo "For help on new commands, type 'zhelp'"
 
 #export PATH=$PATH:"$HOME/.local/bin:$HOME/.cargo/bin:/var/lib/flatpak/exports/bin:/.local/share/flatpak/exports/bin"
 
