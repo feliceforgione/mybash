@@ -30,20 +30,6 @@ checkEnv() {
         fi
     done
 
-    ## Check Package Handeler
-    PACKAGEMANAGER='apt yum dnf pacman zypper'
-    for pgm in ${PACKAGEMANAGER}; do
-        if command_exists ${pgm}; then
-            PACKAGER=${pgm}
-            echo -e "Using ${pgm}"
-        fi
-    done
-
-    if [ -z "${PACKAGER}" ]; then
-        echo -e "${RED}Can't find a supported package manager"
-        exit 1
-    fi
-
      ## Check if the current directory is writable.
     GITPATH="$(dirname "$(realpath "$0")")"
     if [[ ! -w ${GITPATH} ]]; then
@@ -223,11 +209,34 @@ linkZshConfig() {
     ln -svf ${GITPATH}/.zshrc ${USER_HOME}/.zshrc
 }
 
+linkFishConfig() {
+
+    echo -e "\n${GREEN}Creating config.fish file....${RC}"
+
+    ## Check if a config.fish file is already there.
+    OLD_FISH_CONFIG="${USER_HOME}/.config/fish/config.fish"
+
+
+     if [[ -e ${OLD_FISH_CONFIG} ]]; then
+        echo -e "${YELLOW}Moving old config.fish file to $(printf "%q" "$USER_HOME")/.config/fish/config.fish.bak${RC}"
+         if ! mv ${OLD_FISH_CONFIG} ${USER_HOME}/.config/fish/config.fish.bak; then
+             echo -e "${RED}Can't move the old config.fish file!${RC}"
+            exit 1
+        fi
+     fi
+
+    echo -e "${YELLOW}Linking new config.fish file...${RC}"
+
+    ## Make symbolic link.
+    ln -svf ${GITPATH}/config.fish ${USER_HOME}/.config/fish/config.fish
+}
+
 linkConfig() {
      
 
     linkBashConfig
     linkZshConfig
+    linkFishConfig
 
     echo -e "\n${YELLOW}Linking starship toml file...${RC}"
     ln -svf ${GITPATH}/starship.toml ${USER_HOME}/.config/starship.toml
