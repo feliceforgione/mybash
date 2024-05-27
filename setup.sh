@@ -231,15 +231,40 @@ linkFishConfig() {
     ln -svf ${GITPATH}/config.fish ${USER_HOME}/.config/fish/config.fish
 }
 
+linkFastFetchConfig() {
+
+    echo -e "\n${GREEN}Creating config.jsonc fastfetch file....${RC}"
+
+    ## Check if a config.fish file is already there.
+    OLD_FASTFETCH_CONFIG="${USER_HOME}/.config/fastfetch/config.jsonc"
+
+
+     if [[ -e ${OLD_FASTFETCH_CONFIG} ]]; then
+        echo -e "${YELLOW}Moving old config.jsonc fastfetch file to $(printf "%q" "$USER_HOME")/.config/fastfetch/config.jsonc.bak${RC}"
+         if ! mv ${OLD_FASTFETCH_CONFIG} ${USER_HOME}/.config/fastfetch/config.jsonc.bak; then
+             echo -e "${RED}Can't move the old config.jsonc fastfetch file!${RC}"
+            exit 1
+        fi
+     fi
+
+    echo -e "${YELLOW}Linking new config.jsonc fastfetch file file...${RC}"
+
+    ## Make symbolic link.
+    ln -svf ${GITPATH}/configFiles/fastfetch/config.jsonc ${USER_HOME}/.config/fastfetch/config.jsonc
+}
+
+
+
 linkConfig() {
      
 
     linkBashConfig
     linkZshConfig
+    linkFastFetchConfig
     #linkFishConfig
 
     echo -e "\n${YELLOW}Linking starship toml file...${RC}"
-    ln -svf ${GITPATH}/starship.toml ${USER_HOME}/.config/starship.toml
+    ln -svf ${GITPATH}/configFiles/starship/starship.toml ${USER_HOME}/.config/starship.toml
 }
 
 
