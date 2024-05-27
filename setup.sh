@@ -128,6 +128,17 @@ install_zsh_auto_suggestions() {
     fi
 }
 
+install_fzf_tab() {
+    local file_path="$USER_HOME/.zsh/fzf-tab/fzf-tab.zsh"
+
+    if [ -f "$file_path" ]; then
+        echo "FZF Tab installed"
+    else
+        echo -e "${YELLOW}Installing FZF Tab....${RC}"
+        git clone https://github.com/Aloxaf/fzf-tab "$USER_HOME/.zsh/fzf-tab"
+    fi
+}
+
 
 installPlugins() {
     echo -e "${GREEN}\nInstalling Programs....${RC}"
@@ -138,6 +149,7 @@ installPlugins() {
 
     install_zsh_syntax_highlighting
     install_zsh_auto_suggestions
+    install_fzf_tab
 
 }
 
