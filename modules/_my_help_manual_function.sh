@@ -46,7 +46,8 @@ GREEN='\e[32m'
     printf "${YELLOW} Ctrl + R${RC} : search your command history\n" 
     printf "${YELLOW} Ctrl + T${RC} : search o your files (with your current working directory dictating where to perform the search recursively)\n"
   else
-        echo "Following commands: ${GREEN}fzf${RC}"
+        echo -e "Following commands: ${GREEN}fzf${RC}"
+        echo -e "Enter a command after help : ${YELLOW}help fzf${RC}"
   fi
 }
 
